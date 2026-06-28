@@ -281,7 +281,7 @@ canvas{width:100%;display:block;}
 
   <div class="card">
     <div class="seg" id="dayTypeSeg">
-      <button data-d="easy">Easy / rest</button>
+      <button data-d="easy">Rest / lighter</button>
       <button data-d="full">Long-run / hard</button>
     </div>
     <div class="cal"><div class="n" id="fuelCal">0<small> kcal target</small></div></div>
@@ -335,7 +335,7 @@ canvas{width:100%;display:block;}
       <div><label>Date</label><input type="date" id="wDate"></div>
     </div>
     <button class="btn sm" style="margin-top:14px;" onclick="saveWeight()">Save weight</button>
-    <div class="hint"><b>Judge it by feel and fit, not the number.</b> Strength work builds a little muscle as fat comes off, so the scale moves slowly. Energy on the runs matters more than weight. If runs feel flat, eat more.</div>
+    <div class="hint"><b>Judge it by feel, fit and the mirror, not the number.</b> Building muscle while staying lean means the scale may hold steady or even rise slightly as definition improves. That's a win, not a problem. Strength, energy and how clothes fit are the real markers.</div>
   </div>
   <div class="card">
     <h2>Trend</h2>
@@ -357,12 +357,12 @@ canvas{width:100%;display:block;}
 <!-- ===== INFO ===== -->
 <section class="view" id="v-info">
   <div class="card">
-    <h2>Her targets &middot; 63.5 kg</h2>
+    <h2>Her targets &middot; 61.5 kg</h2>
     <div class="hint" style="margin-top:0;">
-      <b>Protein 95–100 g every day.</b> High and steady, vegan plus over 50. This is what keeps loss coming from fat, not muscle.<br><br>
-      <b>Carbs are the energy lever.</b> Lower on easy days (150–180 g), full on long-run and hard days (320–380 g). Train low-ish when quiet, fuel fully when working.<br><br>
-      <b>Gentle deficit on easy days only.</b> Around 250–300 kcal under, never on long-run days. Aiming for roughly half a pound a week. Slow is the point.<br><br>
-      <b>If energy dips or the knee or RA grumbles, the deficit goes first.</b> Training and joints win every time.
+      <b>Goal: build muscle and definition</b>, not lose weight. That means eating to maintenance or a touch above, never under. At BMI ~19.5 there's nothing to cut.<br><br>
+      <b>Protein 120 g every day.</b> The big lever. About 2 g/kg, which is right for an older vegan building muscle. Spread it across the day, roughly 30–40 g a meal, rather than backloading.<br><br>
+      <b>Carbs 230–250 g</b>, up to ~270 on long-run and hard days to fuel and recover. <b>Fat 60–70 g</b>, weighted to omega-3s for the joints.<br><br>
+      <b>Around 2,050–2,200 kcal.</b> Training days sit at the top of that. If a session feels flat, eat more, never train hungry.
     </div>
   </div>
   <div class="card">
@@ -434,10 +434,10 @@ PLAN.forEach((p,i)=>{
 function schedFor(d){return SCHEDULE.find(s=>s.date===d);}
 function ranOn(d){return DB.activities.some(a=>a.type==="run"&&a.date===d);}
 
-/* ---------- TARGETS (63.5kg, age 50) ---------- */
+/* ---------- TARGETS (61.5kg, age 50, very active, building muscle) ---------- */
 const TARGETS = {
-  easy:{p:100,c:185,f:55,cal:1650},
-  full:{p:100,c:350,f:60,cal:2450}
+  easy:{p:120,c:230,f:65,cal:2080},   // rest / lighter day — maintenance, never a deficit
+  full:{p:120,c:270,f:65,cal:2250}    // long-run / hard day — carbs up to fuel & recover
 };
 const HR_CEILING = 130;
 const WATER_TARGET = 2000; // ml base; +500 on long-run/hard days
@@ -451,10 +451,22 @@ const SUPPS = [
   {id:"iron",name:"Iron",note:"only if bloods are low — test first",opt:true},
 ];
 const QUICK = [
-  {n:"Tofu (200g)",p:30,c:6,f:18},
-  {n:"Lentils (1 cup)",p:18,c:40,f:1},
-  {n:"Protein scoop",p:24,c:4,f:2},
-  {n:"GF oats (80g)",p:10,c:55,f:6},
+  {n:"Protein porridge",p:38,c:60,f:20},
+  {n:"Power bowl (tofu/quinoa)",p:36,c:72,f:26},
+  {n:"Protein smoothie",p:30,c:5,f:4},
+  {n:"Big smoothie (oats/PB)",p:40,c:60,f:19},
+  {n:"Tempeh stir-fry",p:34,c:82,f:22},
+  {n:"Tofu scramble & GF toast",p:34,c:48,f:20},
+  {n:"Soy yoghurt, seeds & kiwi",p:18,c:17,f:14},
+  {n:"Apple & almonds",p:6,c:30,f:13},
+  {n:"Lentil & quinoa salad",p:29,c:80,f:14},
+  {n:"Chickpea curry & rice",p:31,c:120,f:16},
+  {n:"Lentil bolognese & GF pasta",p:24,c:95,f:9},
+  {n:"Tofu rice noodles",p:36,c:84,f:22},
+  {n:"Jacket potato & beans",p:18,c:85,f:2},
+  {n:"Sat pre-run toast/PB/banana",p:10,c:67,f:14},
+  {n:"Recovery smoothie",p:38,c:57,f:10},
+  {n:"Banana",p:1,c:27,f:0},
 ];
 
 /* ---------- STATE ---------- */
@@ -578,7 +590,7 @@ function shiftDay(n){
 function renderFuel(){
   document.getElementById("fuelDateLbl").textContent=fuelDate===todayStr()?"Today":fmtDate(fuelDate);
   const dt=dayType(fuelDate);const t=TARGETS[dt];
-  document.getElementById("fuelDayType").textContent=dt==="easy"?"Easy / rest day":"Long-run / hard day";
+  document.getElementById("fuelDayType").textContent=dt==="easy"?"Rest / lighter day":"Long-run / hard day";
   document.querySelectorAll("#dayTypeSeg button").forEach(b=>b.classList.toggle("on",b.dataset.d===dt));
   const meals=mealsFor(fuelDate);
   const sum=meals.reduce((s,m)=>({p:s.p+m.p,c:s.c+m.c,f:s.f+m.f}),{p:0,c:0,f:0});
@@ -770,8 +782,8 @@ function renderHome(){
   document.getElementById("hbC").style.width=Math.min(100,sum.c/t.c*100)+"%";
   document.getElementById("hbF").style.width=Math.min(100,sum.f/t.f*100)+"%";
   document.getElementById("dayTypeHint").innerHTML=dt==="easy"
-    ?'<b>Easy / rest day.</b> Slight deficit, carbs lower. Set the day type on the Fuel tab.'
-    :'<b>Long-run / hard day.</b> Full fuel, carbs high. Set on the Fuel tab.';
+    ?'<b>Rest / lighter day.</b> Eat to maintenance, hit your protein. Set the day type on the Fuel tab.'
+    :'<b>Long-run / hard day.</b> Carbs up to fuel and recover. Set on the Fuel tab.';
   renderTodayCard();
   renderPlan(wi);
 }
